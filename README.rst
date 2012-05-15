@@ -22,10 +22,11 @@ Install
 
 
 
-Usage
-=====
+Documentation
+=============
 
-TODO
+http://readthedocs.org/docs/simula_bibrestclient/en/latest/
+
 
 
 
