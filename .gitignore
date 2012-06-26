@@ -15,3 +15,9 @@ build-docs/
 develop-eggs/
 parts/
 build/
+
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
