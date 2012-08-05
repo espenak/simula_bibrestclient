@@ -3,11 +3,8 @@ from getpass import getpass
 from pprint import pprint
 
 
-# The URL to the simula publication folder
-
-
 # Setup our login credentials.
-auth = dict(username='grandma', password='test')
+auth = dict(username='griff', password='Simula123')
 # Note: you may want to use getpass() to get the password instad of storing it
 #       in this file:
 #auth = dict(username='grandma', password=getpass())
