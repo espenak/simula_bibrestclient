@@ -157,7 +157,7 @@ class BibFolder(BibResource):
                       itemids=itemids)
         return self.get(params_dict=params)
 
-    def create_item(self, id, portal_type, **attributes):
+    def create_item(self, id, portal_type, attributes):
         """
         Perform HTTP POST to create a bibliography item within this folder.
 
@@ -167,10 +167,16 @@ class BibFolder(BibResource):
 
         :param id: ID (short name) of the new item.
         :param portal_type: The portal_type of the bibliography item.
-        :param attributes: Attributes for the new item.
+        :param attributes:
+            Attributes for the new item. These are the same as the
+            ``attributes`` documented in the REST API docs.
+            Note that ``attributes['id']`` is
+            ignored if included (The ``id`` parameter is used instead).
         """
-        data = dict(portal_type=portal_type, attributes=dict(id=id))
-        data['attributes'].update(attributes)
+        attributes_full = {}
+        attributes_full.update(attributes)
+        attributes_full['id'] = id
+        data = dict(portal_type=portal_type, attributes=attributes_full)
         return self.post(self.encode(data))
 
     def bulk_update(self, items, pretend=False):
@@ -211,7 +217,7 @@ class BibItem(BibResource):
         """
         return super(BibItem, self).get()
 
-    def update(self, portal_type, portal_state=None, **attributes):
+    def update(self, portal_type, portal_state=None, attributes={}):
         """
         Perform HTTP PUT to update the item bibliography item.
 
@@ -224,7 +230,9 @@ class BibItem(BibResource):
             item includes ``portal_state_transitions``, which describes the next possible
             states.
         :param portal_type: The portal_type for the bibliography item.
-        :param attributes: Attributes to update.
+        :param attributes:
+            Attributes to update. These are the same as the
+            ``attributes`` documented in the REST API docs.
         """
         kw = {'attributes': attributes}
         if portal_state:
