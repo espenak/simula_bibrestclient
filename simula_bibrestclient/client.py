@@ -226,8 +226,7 @@ class BibItem(BibResource):
         :param portal_type: The portal_type for the bibliography item.
         :param attributes: Attributes to update.
         """
-        kw = {}
-        kw.update(attributes)
+        kw = {'attributes': attributes}
         if portal_state:
             kw['portal_state'] = portal_state
         params = dict(portal_type=portal_type, **kw)
