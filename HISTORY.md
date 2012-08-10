@@ -1,6 +1,11 @@
 # History
 
 
+## Version 1.0.4
+
+- Added ``pretend``-support to all of the methods that change the database.
+  Note that this is only a client change, the API already supported pretend.
+
 ## Version 1.0.3
 
 - Changed ``BibFolder.create_item`` and ``BibItem.update`` to get
