@@ -199,6 +199,20 @@ class BibFolder(BibResource):
         return self.put(self.encode(data))
 
 
+    def get_website_url(self):
+        """
+        Returns the URL for this bibfolder on the website (not the REST API url).
+        """
+        return self.uri.replace('@@rest', '')
+
+    def get_restapi_url(self):
+        """
+        Returns the REST API URL of this bibfolder.
+        When this URL is opened in a browser, the user sees the docs for the REST API.
+        """
+        return self.uri
+
+
 class BibItem(BibResource):
     """
     Bibliography item (e.g.: ArticleReferece, PhdThesis, Book, ...) REST API.
@@ -258,6 +272,19 @@ class BibItem(BibResource):
         on the website.
         """
         return self.uri.replace('@@rest', 'delete_confirmation')
+
+    def get_website_url(self):
+        """
+        Returns the URL for this bibliography item on the website (not the REST API url).
+        """
+        return self.uri.replace('@@rest', '')
+
+    def get_restapi_url(self):
+        """
+        Returns the REST API URL of this bibliography item.
+        When this URL is opened in a browser, the user sees the docs for the REST API.
+        """
+        return self.uri
 
     def browser_confirm_delete(self):
         """
