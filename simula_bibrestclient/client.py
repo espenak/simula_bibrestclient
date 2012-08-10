@@ -211,7 +211,7 @@ class BibItem(BibResource):
         """
         return super(BibItem, self).get()
 
-    def update(self, portal_type, **attributes):
+    def update(self, portal_type, portal_state=None, **attributes):
         """
         Perform HTTP PUT to update the item bibliography item.
 
@@ -219,11 +219,31 @@ class BibItem(BibResource):
             This is a very thin wrapper around :meth:`.put`. See the
             source for this method (link on the right hand side) to see what it does.
 
+        :param portal_state: Change the state of the bibitem. When an item is
+            created, its state is ``private``. Any request changing or getting the
+            item includes ``portal_state_transitions``, which describes the next possible
+            states.
         :param portal_type: The portal_type for the bibliography item.
         :param attributes: Attributes to update.
         """
-        params = dict(portal_type=portal_type, attributes=attributes)
+        kw = {}
+        kw.update(attributes)
+        if portal_state:
+            kw['portal_state'] = portal_state
+        params = dict(portal_type=portal_type, **kw)
         return self.put(self.encode(params))
+
+    def request_approval_from_coauthors(self, portal_type):
+        """
+        Shortcut for ``update(portal_state='submit')``.
+        """
+        return self.update(portal_type, portal_state='submit')
+
+    def publish_internally(self, portal_type):
+        """
+        Shortcut for ``update(portal_state='publish_internally')``.
+        """
+        return self.update(portal_type, portal_state='publish_internally')
 
     def get_browser_deleteurl(self):
         """
