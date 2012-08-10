@@ -35,9 +35,9 @@ pprint(create_response['portal_state_transitions'])
 
 
 ## Get an API for the created item
-itemid = exampleitemid #create_response['attributes']['id']
+itemid = create_response['attributes']['id']
 exampleitem = BibItem(itemid, decode_output=True, **auth)
-portal_type = 'ArticleReference' #create_response['portal_type']
+portal_type = create_response['portal_type']
 
 
 ## Publish the bibitem internally.
