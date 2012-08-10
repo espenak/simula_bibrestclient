@@ -37,8 +37,8 @@ print '       ', repr(search_reponse['parameters'])
 
 # We can use create_item() to create a new item in the folder
 create_response = folder.create_item(exampleitemid, 'ArticleReference',
-                                     title='Example',
-                                     publication_year='2012')
+                                     attributes={'title': 'Example',
+                                                 'publication_year': '2012'})
 print 'Created {title}'.format(**create_response['attributes'])
 print '   View it here: {url}'.format(**create_response)
 #pprint(create_response) # Pretty-print the entire response
@@ -64,7 +64,8 @@ print '   title:', get_response['attributes']['title']
 
 
 portal_type = get_response['portal_type']
-update_response = exampleitem.update(portal_type, title='Updated example item using the Python REST client library')
+update_response = exampleitem.update(portal_type,
+                                     attributes={'title': 'Updated example item using the Python REST client library'})
 print 'Updated', update_response['attributes']['id']
 print '   new title:', update_response['attributes']['title']
 #pprint(update_response) # Pretty-print the entire response
