@@ -216,6 +216,14 @@ class BibFolder(BibResource):
 class BibItem(BibResource):
     """
     Bibliography item (e.g.: ArticleReferece, PhdThesis, Book, ...) REST API.
+
+    .. note:: Why is portal_type a method argument instead of a constructor argument?
+
+        Because ``get`` does not require ``portal_type``, and we need
+        to be able to perform a ``get``-request to find the ``portal_type``.
+        We do not store any state in the class, so ``portal_state`` is
+        not automatically maintained internally (since this would require
+        an extra get-request for each update).
     """
     def __init__(self, itemid, username, password, folderurl=folderurl, **kwargs):
         """
