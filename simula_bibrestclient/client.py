@@ -157,7 +157,7 @@ class BibFolder(BibResource):
                       itemids=itemids)
         return self.get(params_dict=params)
 
-    def create_item(self, id, portal_type, attributes):
+    def create_item(self, id, portal_type, attributes, pretend=False):
         """
         Perform HTTP POST to create a bibliography item within this folder.
 
@@ -172,11 +172,17 @@ class BibFolder(BibResource):
             ``attributes`` documented in the REST API docs.
             Note that ``attributes['id']`` is
             ignored if included (The ``id`` parameter is used instead).
+        :pretend:
+            Just pretend to make the changes? If ``True``, no changes are made
+            to the database, however the response will still be just as if we
+            used ``pretend=False``.
         """
         attributes_full = {}
         attributes_full.update(attributes)
         attributes_full['id'] = id
         data = dict(portal_type=portal_type, attributes=attributes_full)
+        if pretend:
+            data['parameters'] = {'pretend': True}
         return self.post(self.encode(data))
 
     def bulk_update(self, items, pretend=False):
@@ -239,7 +245,7 @@ class BibItem(BibResource):
         """
         return super(BibItem, self).get()
 
-    def update(self, portal_type, portal_state=None, attributes={}):
+    def update(self, portal_type, portal_state=None, attributes={}, pretend=False):
         """
         Perform HTTP PUT to update the item bibliography item.
 
@@ -255,10 +261,16 @@ class BibItem(BibResource):
         :param attributes:
             Attributes to update. These are the same as the
             ``attributes`` documented in the REST API docs.
+        :pretend:
+            Just pretend to make the changes? If ``True``, no changes are made
+            to the database, however the response will still be just as if we
+            used ``pretend=False``.
         """
         kw = {'attributes': attributes}
         if portal_state:
             kw['portal_state'] = portal_state
+        if pretend:
+            kw['parameters'] = {'pretend': True}
         params = dict(portal_type=portal_type, **kw)
         return self.put(self.encode(params))
 
