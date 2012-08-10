@@ -5,6 +5,12 @@ simula_bibrestclient
 RESTful client for the Simula (http://simula.no) bibliography REST api.
 
 
+History
+=======
+
+See `HISTORY.md`_.
+
+
 Issues/contribute
 =================
 
@@ -42,3 +48,4 @@ repository (the directory containing this README file)::
 
 
 .. _`simula_bibrestclient`: https://github.com/espenak/simula_bibrestclient
+.. _`HISTORY.md`: https://github.com/espenak/simula_bibrestclient/blob/master/HISTORY.md
