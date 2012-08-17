@@ -1,3 +1,5 @@
+import base64
+from os.path import basename
 import json
 from restkit import Resource, BasicAuth
 from warnings import warn
@@ -314,3 +316,54 @@ class BibItem(BibResource):
         """
         import webbrowser
         webbrowser.open_new_tab(self.get_browser_deleteurl())
+
+
+    @classmethod
+    def encode_pdfdata(cls, data):
+        """
+        Returns the ``data``-string base64-encoded.
+        """
+        return base64.standard_b64encode(data)
+
+    @classmethod
+    def encode_pdf(cls, filename, data, content_type='application/pdf'):
+        """
+        Create a ``simula_pdf_file``-compatible dict.
+
+        :param filename:
+            The name of the file (E.g.: ``"myfile.pdf"``). This file is not
+            read from disk, the string is the filename that users get when they
+            download the PDF from the website.
+        :param data:
+            A string containing the data of the PDF.
+        :param content_type:
+            The content-type of the file. Defaults to "application/pdf".
+        :return:
+            A ``simula_pdf_file``-compatible dict where ``data`` is base64 encoded.
+        """
+        base64data = cls.encode_pdfdata(data)
+        return {'filename': filename,
+                'base64data': base64data,
+                'content_type': content_type}
+
+    @classmethod
+    def encode_pdffile(cls, filepath, content_type='application/pdf'):
+        """
+        Create a ``simula_pdf_file``-compatible dict from the file at the given
+        ``filepath``. Reads the file from disk and uses :meth:`.encode_pdf`.
+
+        :param filepath:
+            Path to a file on the local filesystem.
+        :param content_type:
+            The content-type of the file. Defaults to "application/pdf".
+        """
+        return cls.encode_pdf(filename=basename(filepath),
+                              data=open(filepath).read(),
+                              content_type=content_type)
+
+    @classmethod
+    def decode_pdfdata(cls, base64data):
+        """
+        Decode ``base64data``.
+        """
+        data = base64.standard_b64decode(base64data)
