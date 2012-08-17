@@ -1,5 +1,9 @@
 # History
 
+## Version 1.0.5
+
+- Support PDF upload/download.
+
 
 ## Version 1.0.4
 
