@@ -241,11 +241,11 @@ class BibItem(BibResource):
         url = urljoin(folderurl, itemid, '@@rest')
         super(BibItem, self).__init__(url, username, password, **kwargs)
 
-    def get(self):
+    def get(self, include_filefields=False):
         """
         Perform HTTP GET to get the bibliography item.
         """
-        return super(BibItem, self).get()
+        return super(BibItem, self).get(params_dict={'include_filefields': include_filefields})
 
     def update(self, portal_type, portal_state=None, attributes={}, pretend=False):
         """
@@ -366,4 +366,13 @@ class BibItem(BibResource):
         """
         Decode ``base64data``.
         """
-        data = base64.standard_b64decode(base64data)
+        return base64.standard_b64decode(base64data)
+
+    @classmethod
+    def decode_pdf(cls, simula_pdf_file_dict):
+        """
+        The reverse of :meth:`encode_pdf`.
+        """
+        return {'filename': simula_pdf_file_dict['filename'],
+                'data': cls.decode_pdfdata(simula_pdf_file_dict['base64data']),
+                'content_type': simula_pdf_file_dict['content_type']}

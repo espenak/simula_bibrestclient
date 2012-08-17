@@ -60,7 +60,7 @@ print '   View it here: {url}'.format(**create_response)
 
 ###############################################
 # Work with the item API
-# - Get all attributes of a single item
+# - Get all attributes of a single item, including the PDF data
 # - Update attributes of an item
 # - Delete single item via the web-browser
 ###############################################
@@ -68,11 +68,13 @@ print '   View it here: {url}'.format(**create_response)
 itemid = create_response['attributes']['id']
 exampleitem = BibItem(itemid, decode_output=True, **auth)
 
-get_response = exampleitem.get()
+get_response = exampleitem.get(include_filefields=True)
 print 'Got:', get_response['url']
 print '   url:', get_response['url']
 print '   portal_type:', get_response['portal_type']
 print '   title:', get_response['attributes']['title']
+print '   simula_pdf_file:', get_response['attributes']['simula_pdf_file']
+print '   simula_pdf_file decoded:', BibItem.decode_pdf(get_response['attributes']['simula_pdf_file'])
 #pprint(get_response) # Pretty-print the entire response
 
 
