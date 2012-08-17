@@ -3,6 +3,18 @@ from getpass import getpass
 from pprint import pprint
 
 
+def create_pdf():
+    ## Normally you would have a PDF on the local disk, in which case you would
+    ## do something like this:
+    #pdf = BibItem.encode_pdffile('/path/to/my/cool.pdf', 'Testdata')
+    ## or:
+    #pdf = BibItem.encode_pdf('my.pdf', open('/path/to/my/cool.pdf').read())
+
+    ## But for this example, we just use a simple string
+    pdf = BibItem.encode_pdf('my.pdf', 'Testdata')
+    return pdf
+
+
 # Setup our login credentials.
 auth = dict(username='griff', password='Simula123')
 # Note: you may want to use getpass() to get the password instad of storing it
@@ -38,7 +50,8 @@ print '       ', repr(search_reponse['parameters'])
 # We can use create_item() to create a new item in the folder
 create_response = folder.create_item(exampleitemid, 'ArticleReference',
                                      attributes={'title': 'Example',
-                                                 'publication_year': '2012'})
+                                                 'publication_year': '2012',
+                                                 'simula_pdf_file': create_pdf()})
 print 'Created {title}'.format(**create_response['attributes'])
 print '   View it here: {url}'.format(**create_response)
 #pprint(create_response) # Pretty-print the entire response

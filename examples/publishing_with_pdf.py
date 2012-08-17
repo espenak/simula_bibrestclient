@@ -16,6 +16,7 @@ exampleitemid = auth['username'] + '-pubexample'
 
 
 ## Create the item (it will be private by default)
+pdf = BibItem.encode_pdf('my.pdf', 'Testdata')
 create_response = folder.create_item(exampleitemid, 'ArticleReference',
                                      attributes={'title': 'Example',
                                                  'publication_year': '2012',
@@ -24,14 +25,12 @@ create_response = folder.create_item(exampleitemid, 'ArticleReference',
                                                               'username': 'hpl'},
                                                              {'username': 'griff',
                                                               'firstnames': 'Carsten',
-                                                              'lastname': 'Griwodz'}]})
+                                                              'lastname': 'Griwodz'}],
+                                                 'simula_pdf_file': pdf})
 print 'Created {title}'.format(**create_response['attributes'])
 print '   View it here: {url}'.format(**create_response)
 print 'The current portal_state is "{portal_state}", and the next possible states are: '.format(**create_response)
 pprint(create_response['portal_state_transitions'])
-
-
-## TODO: Upload PDF
 
 
 ## Get an API for the created item
