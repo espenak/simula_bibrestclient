@@ -23,6 +23,7 @@ setup(name = 'simula_bibrestclient',
       entry_points = {
           'console_scripts': [
               'simula_bibrestclient = simula_bibrestclient.cli.main:main',
+              'cbc_publish = simula_bibrestclient.cbc_publish.cbc_publish:main',
           ],
       }
 )
