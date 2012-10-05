@@ -354,7 +354,7 @@ def incoming_command(auth, args) :
     for key in incoming :
       publication = response_dict[key]
       authors = ["%s %s" % (author["firstnames"], author["lastname"]) for author in publication["attributes"]["authors"]]
-      print "%s : %s" % (", ".join(authors), publication["attributes"]["title"])
+      print "(%s) %s : %s" % (key, ", ".join(authors), publication["attributes"]["title"])
 
 
 ################### Main ####################
