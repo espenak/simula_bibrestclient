@@ -356,11 +356,43 @@ def incoming_command(auth, args) :
       authors = ["%s %s" % (author["firstnames"], author["lastname"]) for author in publication["attributes"]["authors"]]
       print "(%s) %s : %s" % (key, ", ".join(authors), publication["attributes"]["title"])
 
+def plone_status_command(auth, args) :
+  print "Searching for publications with '%s' as author" % args.username
+  folder = get_BibFolder(auth)
+  search_response = folder.search(simula_author_usernames=[args.username])
+
+  for item in search_response["items"] :
+    print "%s (%s) : %s" % (item["attributes"]["id"], item["attributes"]["title"], item["portal_state"])
+
+def makepublic_command(auth, args) :
+  print "Warning: The makepublic command is untested!"
+
+  print "Searching for publications with '%s' as author" % args.username
+  folder = get_BibFolder(auth)
+  search_response = folder.search(simula_author_usernames=[args.username])
+
+  for item in search_response["items"] :
+    if item["portal_state"] != "published" :
+      print "Found non-public publication"
+
+      if "submit" in [transition['id'] for transition in item["portal_state_transitions"]] :
+        print "  Updating status"
+
+        ## Get an API for the created item
+        bib_item = BibItem(item["attributes"]["id"], decode_output=True, **auth)
+
+        # FIXME: Check if this works!
+        bib_item.request_approval_from_coauthors(item["portal_type"])
+
+
+
+  
+
 
 ################### Main ####################
 def main(arguments=None, subcommands=[]) :
   parser = ArgumentParser(description="Exchange data between Publish and Simula Plone publication databases")
-  parser.add_argument("command", choices=("import", "export", "outgoing", "incoming", "authors"))
+  parser.add_argument("command", choices=("import", "export", "outgoing", "incoming", "authors", "plone_status", "makepublic"))
   parser.add_argument("--username", "-u", help="Username at Simula")
   parser.add_argument("--password", "-p", help="Password at Simula")
   parser.add_argument("--filename", "-f", help="Filename of publish database")
@@ -378,13 +410,6 @@ def main(arguments=None, subcommands=[]) :
 
   auth = { "username" : args.username, "password" : args.password }
   
-  if args.command == "outgoing" :
-    outgoing_command(auth, args)
-  elif args.command == "incoming" :
-    incoming_command(auth, args)
-  elif args.command == "export" :
-    export_command(auth, args)
-  elif args.command == "import" :
-    import_command(auth, args)
-  elif args.command == "authors" :
-    authors_command(auth, args)
+  # Call the function implementing the command
+  command_func = args.command+"_command"
+  globals()[command_func](auth, args)
