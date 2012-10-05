@@ -29,12 +29,12 @@ def build_plone_authors(publish_authors) :
     
 
 plone_publish_mapping = (
-    ( u'id', u'key'),
-    ( u'publication_state', u'status'), # The allowed values here should match in both systems
-    ( u'DOI', u'doi'),
-    ( u'publication_year', u'year'),
-    ( u'pdf_url', u'pdf'),
-#    ( u'category', u'type'),
+    ( u'id', 'key'),
+    ( u'publication_state', 'status'), # The allowed values here should match in both systems
+    ( u'DOI', 'doi'),
+    ( u'publication_year', 'year'),
+    ( u'pdf_url', 'pdf'),
+    ( u'category', 'type'),
 )
 
 category_mapping = (
@@ -286,25 +286,41 @@ def portal_type_is_supported(plone_item) :
   return plone_fields.has_key(plone_item["portal_type"])
 
 def plone_to_publish( plone_item ) :
+  plone_item = plone_item.copy()
+
   publish_item = {}
-  publish_item.update(plone_item["attributes"])
 
   for plone_key, publish_key in plone_publish_mapping :
     # TODO: Check that key doesn't exist
     if plone_item["attributes"].has_key(plone_key) :
-      publish_item[publish_key] = plone_item["attributes"][plone_key]
-      del publish_item[plone_key]
+      publish_item[publish_key] = plone_item["attributes"][plone_key].encode('utf8')
+      del plone_item["attributes"][plone_key]
 
   # Handle authors
   publish_item["author"] = []
   for author in plone_item["attributes"]["authors"] :
-    publish_item["author"].append(" ".join((author["firstnames"], author["lastname"])))
-  del publish_item["authors"]
+    publish_author = " ".join( (author["firstnames"], author["lastname"]) )
+    publish_item["author"].append(publish_author if type(publish_author) is not unicode else publish_author.encode('utf8'))
+  del plone_item["attributes"]["authors"]
 
   # Handle category
   portal_type = plone_item["portal_type"]
   publish_category = plone_fields[portal_type]["publish_category"]
   publish_item["category"] = publish_category
+  del plone_item["portal_type"]
+
+  # Copy the rest of the fields
+  for key, value in plone_item["attributes"].iteritems() :
+    # Be sure not to overwrite attribute
+    if publish_item.has_key(key) :
+      print "Skipping plone attribute '%s' as the attribute already exists in publish" % key
+      continue
+
+    key = str(key) if type(key) is not unicode else key.encode('utf8')
+    value = value  if type(value) is not unicode else value.encode('utf8')
+
+    publish_item[key] = value
+
 
   # Delete empty fields
   # NOTE: Can't modify the dictionary while iterating through it
@@ -371,7 +387,7 @@ def import_command(auth, args) :
     if portal_type_is_supported(plone_item) :
       publish_database.append(plone_to_publish(plone_item))
     else :
-      print "Skipping publication. Portal type '", plone_item["portal_type"], " is not supported"
+      print "Skipping publication. Portal type '%s' is not supported" %  plone_item["portal_type"]
 
   text = publish.formats.pub.write(publish_database)
   with open(filename, 'w') as file :

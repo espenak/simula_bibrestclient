@@ -22,7 +22,6 @@ def put_authors(authors) :
 
 
 def get_realname(username) :
-  global username_to_realname
   _fetch_authors()
 
   return username_to_realname[username]
