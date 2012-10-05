@@ -8,6 +8,7 @@ from simula_bibrestclient.client import BibFolder, BibItem
 from simula_bibrestclient.diff import create_diff
 
 import publish
+import cbc_authors
 
 def build_plone_authors(publish_authors) :
   plone_authors = []
@@ -280,6 +281,10 @@ def update_status(auth, portal_type, itemid) :
   pprint(create_response['portal_state_transitions'])
 
 
+# Test if we're are able to convert a publication to publish
+def portal_type_is_supported(plone_item) :
+  return plone_fields.has_key(plone_item["portal_type"])
+
 def plone_to_publish( plone_item ) :
   publish_item = {}
   publish_item.update(plone_item["attributes"])
@@ -322,7 +327,7 @@ def get_publish_database(args) :
   database = [ publication for publication in database if publication["category"] in ("articles", "refproceedings") ]
 
   # Limit database to papers with this author
-  author_name = username_to_realname[args.username]
+  author_name = cbc_authors.get_realname(args.username)
   database = [ publication for publication in database if author_name in publication["author"] ]
 
   return database
@@ -363,7 +368,10 @@ def import_command(auth, args) :
 
   publish_database = []
   for plone_item in search_response["items"] :
-    publish_database.append(plone_to_publish(plone_item))
+    if portal_type_is_supported(plone_item) :
+      publish_database.append(plone_to_publish(plone_item))
+    else :
+      print "Skipping publication. Portal type '", plone_item["portal_type"], " is not supported"
 
   text = publish.formats.pub.write(publish_database)
   with open(filename, 'w') as file :
