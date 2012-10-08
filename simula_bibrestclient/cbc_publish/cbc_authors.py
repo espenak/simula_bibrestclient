@@ -20,6 +20,10 @@ def _fetch_authors() :
 def put_authors(authors) :
   raise NotImplementedError
 
+def is_cbc_author(username) :
+  _fetch_authors()
+
+  return username_to_realname.has_key(username)
 
 def get_realname(username) :
   _fetch_authors()

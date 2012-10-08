@@ -404,9 +404,15 @@ def main(arguments=None, subcommands=[]) :
   if args.username is None :
     args.username = raw_input("Username:")
 
+
+  if not cbc_authors.is_cbc_author(args.username) :
+    print "Error! '%s' is not listed as CBC author. If this is not correct, please contact Tom." % args.username
+    sys.exit(1)
+
   # Get password if not given on command line
   if args.password is None :
     args.password = getpass.getpass()
+
 
   auth = { "username" : args.username, "password" : args.password }
   
