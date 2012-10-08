@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 import sys, os, pprint, getpass, itertools
-import datetime, dateutil.parser
+import datetime, dateutil.parser, restkit
 
 from simula_bibrestclient.client import BibFolder, BibItem
 from simula_bibrestclient.diff import create_diff
@@ -21,8 +21,9 @@ def build_plone_authors(publish_authors) :
     plone_author["lastname"]  =  splitted_author[-1]
     plone_author["firstnames"] = " ".join(splitted_author[:-1])
 
-    if simula_cbc_guys.has_key(author) :
-      plone_author["username"] = simula_cbc_guys[author]
+    plone_author["username"] = cbc_authors.get_username(author)
+    if plone_author["username"] is None :
+      del plone_author["username"]
 
     plone_authors.append(plone_author)
 
@@ -68,8 +69,15 @@ def publish_to_plone( publish_item ) :
   attributes["authors"] = build_plone_authors(attributes["author"])
   del attributes["author"]
 
-  # special handling of pdf urls
-  # FIXME
+  # Handle pdf fields
+  # Remove all fields related to pdf files.
+  pdf_fields = ('pdf_url', 'uploaded_pdfFile_visibility' 'simula_pdf_file')
+
+  for f in pdf_fields :
+    if attributes.has_key(f) :
+      del attributes[f]
+
+
   
 
   if attributes.has_key("pdf_url") and attributes["pdf_url"] == "missing" :
@@ -285,17 +293,28 @@ def export_command(auth, args) :
   for publication in database :
     plone_items.append(publish_to_plone(publication))
 
+  # Then pretend to update to get the changes that will be applied
+  # when we update for real
+  pretend_response = folder.bulk_update(pretend=True, items = plone_items)
 
-  # Then pretend to update to get the changes that will be applied when we update
-  # for real
-  pretend_response = folder.bulk_update(pretend=True,
-                                        items=plone_items)
+  # try :
+  #
+  #  pretend_response = folder.bulk_update(pretend=True,
+  #                                         items=plone_items)
+  # except restkit.errors.RequestFailed as e:
+  #   print "Update failed! Please report the error."
+  #   msg_str = e.msg.replace("false", "False").replace("true", "True")
+  #   m = eval(msg_str)
+
+  #   print "Item with error"
+  #   pprint.pprint(m)
+  #   sys.exit(1)
 
   # Ask the user to confirm before bulk updating
-  print 'Are you sure you want to make the following changes:'
-  print create_diff(current_values['items'], pretend_response['items'])
+  #  print 'Are you sure you want to make the following changes:'
+  #  print create_diff(current_values['items'], pretend_response['items'])
   if raw_input('Confirm changes (y|N): ') == 'y':
-    response = folder.bulk_update(items=items)
+    response = folder.bulk_update(items=plone_items)
 
     # List the changed items
     print 'Changed items:'
