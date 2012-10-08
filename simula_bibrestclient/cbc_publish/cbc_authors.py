@@ -1,7 +1,7 @@
 import urllib2
 
 username_to_realname = None
-
+realname_to_username = None
 def _fetch_authors() :
   global username_to_realname
 
@@ -31,6 +31,12 @@ def get_realname(username) :
   return username_to_realname[username]
 
 
-def get_username(real_name) :
-  raise NotImplementedError
-  
+def get_username(realname) :
+  """ Return username or None if not found """
+
+  # Instantiate inverse mapping if necessary
+  if realname_to_username is None :
+    global realname_to_username
+    realname_to_username = {value : key for key, value in username_to_realname.iteritems()}
+
+  return realname_to_username.get(realname, None)
