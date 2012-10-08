@@ -1,12 +1,12 @@
 """Mapping between plone and publish representations"""
 
 plone_publish_mapping = (
-    ( u'id', 'key'),
-    ( u'publication_state', 'status'), # The allowed values here should match in both systems
-    ( u'DOI', 'doi'),
-    ( u'publication_year', 'year'),
-    ( u'pdf_url', 'pdf'),
-    ( u'category', 'type'),
+    ( 'id', 'key'),
+    ( 'publication_state', 'status'), # The allowed values here should match in both systems
+    ( 'DOI', 'doi'),
+    ( 'publication_year', 'year'),
+    ( 'pdf_url', 'pdf'),
+    ( 'category', 'type'),
 )
 
 category_mapping = (
