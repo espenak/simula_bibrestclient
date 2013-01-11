@@ -205,15 +205,22 @@ def plone_to_publish( plone_item ) :
                                          
     del plone_item["attributes"]["keywords"]
 
+  # Handle projects
+  if plone_item["attributes"].has_key("project") :
+    if (len(plone_item["attributes"]) > 0) :
+      publish_item["simula_project"] = ", ".join([project["title"] for project in plone_item["attributes"]["project"]])
+    del plone_item["attributes"]["project"]
+
   # Copy the rest of the fields
   for key, value in plone_item["attributes"].iteritems() :
     # Be sure not to overwrite attribute
     if publish_item.has_key(key) :
-      print "Skipping plone attribute '%s' as the attribute already exists in publish" % key
+      print "  Skipping plone attribute '%s' as the attribute already exists in publish" % key
       continue
 
     if type(value) == dict or type(value) == list :
-      print "Skipping plone attribute '%s'. Don't know how to handle it" % key
+      if len(value) > 0 :
+        print "  Skipping plone attribute '%s'. Don't know how to handle it" % key
       continue
 
     key = str(key) if type(key) is not unicode else key.encode('utf8')
