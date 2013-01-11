@@ -118,5 +118,47 @@ plone_fields = {
       ),
     "required" : set(("isbn",)),
     "publish_category" : "refproceedings"
-  }
+  },
+
+  "InproceedingsReference" : {
+        # TODO
+        "fields" : set(),
+        "required" : set(("authors", "booktitle",
+                          "publication_state", "publication_year",
+                          "simula_pdf_file", "title", 
+                          "uploaded_pdfFile_visibility")),
+        "publish_category" : "proceedings"
+  },
+
+  "EditedBookReference" : {
+        # TODO
+        "fields" : set() ,
+        "required" : set(("authors", "publication_state", 
+                         "publication_year", "publisher", 
+                         "simula_pdf_file", "title",
+                         "uploaded_pdfFile_visibility")),
+        "publish_category" : "edited"
+  },
+
+  "InbookReference" : {
+        # TODO
+        "fields" : set(),
+        "required" : set(("authors", "booktitle", 
+                          "chapter", "editor",
+                          "pages",  "publication_state",
+                          "publication_year", "publisher",
+                          "simula_pdf_file", "title",
+                          "uploaded_pdfFile_visibility")),
+        "publish_category" : "chapters"
+  },
+
+  "InvitedTalkReference" : {
+        # TODO
+        "fields" : set(),
+        "required" : set(("misc_type", "publication_state",
+                          "publication_year", "simula_pdf_file", 
+                          "title", "uploaded_pdfFile_visibility")),
+        "publish_category" : "talks"
+}
+
 }
