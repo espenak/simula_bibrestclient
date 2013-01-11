@@ -173,6 +173,8 @@ def portal_type_is_supported(plone_item) :
   return plone_fields.has_key(plone_item["portal_type"])
 
 def plone_to_publish( plone_item ) :
+  print "Converting '%s' to publish format" % (plone_item["attributes"]["title"].strip(),)
+
   plone_item = plone_item.copy()
 
   publish_item = {}
@@ -196,11 +198,22 @@ def plone_to_publish( plone_item ) :
   publish_item["category"] = publish_category
   del plone_item["portal_type"]
 
+  # Handle keywords
+  if plone_item["attributes"].has_key("keywords") :
+    if len(plone_item["attributes"]["keywords"]) > 0 :
+      publish_item["keywords"] = ", ".join(plone_item["attributes"]["keywords"])
+                                         
+    del plone_item["attributes"]["keywords"]
+
   # Copy the rest of the fields
   for key, value in plone_item["attributes"].iteritems() :
     # Be sure not to overwrite attribute
     if publish_item.has_key(key) :
       print "Skipping plone attribute '%s' as the attribute already exists in publish" % key
+      continue
+
+    if type(value) == dict or type(value) == list :
+      print "Skipping plone attribute '%s'. Don't know how to handle it" % key
       continue
 
     key = str(key) if type(key) is not unicode else key.encode('utf8')
@@ -255,8 +268,10 @@ def import_command(auth, args) :
 
   folder = get_BibFolder(auth)
 
-  print "Searching for publications with '%s' as author" % args.username
-  search_response = folder.search(simula_author_usernames=[args.username])
+  author = args.author if args.author else args.username
+
+  print "Searching for publications with '%s' as author" % author
+  search_response = folder.search(simula_author_usernames=[author])
 
   # FIXME: Check authentication. search_response["authenticated_user"] appears not to exist...
   # if search_response['authenticated_user'] is None :
@@ -287,6 +302,15 @@ def export_command(auth, args) :
   folder = get_BibFolder(auth)  
 
   database = get_publish_database(args)
+
+  # In order to do a pretend query and construct a diff that the user
+  # can approve, we need to query the server for the current values of
+  # the publication.
+
+  # Construct a dictionary with ids as keys.
+  publish_dict = {publication['key'] : publication for publication in database }
+
+  current_values = folder.search(itemids=publish_dict.keys())
 
   plone_items = []
 
@@ -417,6 +441,7 @@ def main(arguments=None, subcommands=[]) :
   parser.add_argument("--filename", "-f", help="Filename of publish database")
   parser.add_argument("--dont_list", "-dl", default=False, action="store_true", help="Don't list publications")
   parser.add_argument("--dryrun", "-dr", default=False, action="store_true", help="Don't write to databases (plone or publish")
+  parser.add_argument("--author", "-a", help="Username of author to look (if different from username")
   args = parser.parse_args()
 
   # Get username is not given on command line
