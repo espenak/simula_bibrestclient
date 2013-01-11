@@ -192,6 +192,12 @@ def plone_to_publish( plone_item ) :
     publish_item["author"].append(publish_author if type(publish_author) is not unicode else publish_author.encode('utf8'))
   del plone_item["attributes"]["authors"]
 
+  # # Handle editors
+  if plone_item["attributes"].has_key("editor") :
+    # Borrow functionality from publish to parse the editor string
+    publish_item["editor"] = publish.formats.bibtex._extract_authors(plone_item["attributes"], "editor")
+    del plone_item["attributes"]["editor"]
+
   # Handle category
   portal_type = plone_item["portal_type"]
   publish_category = plone_fields[portal_type]["publish_category"]
@@ -213,6 +219,10 @@ def plone_to_publish( plone_item ) :
 
   # Copy the rest of the fields
   for key, value in plone_item["attributes"].iteritems() :
+    # Skip empty attributes
+    if not value :
+      continue
+
     # Be sure not to overwrite attribute
     if publish_item.has_key(key) :
       print "  Skipping plone attribute '%s' as the attribute already exists in publish" % key
@@ -224,7 +234,10 @@ def plone_to_publish( plone_item ) :
       continue
 
     key = str(key) if type(key) is not unicode else key.encode('utf8')
-    value = value  if type(value) is not unicode else value.encode('utf8')
+    value = str(value) if type(value) is not unicode else value.encode('utf8')
+
+    # Publish can't handle multiline strings, so remove all newlines
+    value = " ".join([line.strip() for line in value.splitlines()])
 
     publish_item[key] = value
 
